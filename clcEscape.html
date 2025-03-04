@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Video Control</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-database.js"></script>
+    
+    <script>
+      // Configura tu proyecto Firebase
+      var firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        databaseURL: "YOUR_DATABASE_URL",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+      };
+      firebase.initializeApp(firebaseConfig);
+      var database = firebase.database();
+
+      var video = document.getElementById("videoPlayer");
+
+      // Lee el estado de la acción desde Firebase
+      database.ref('action').on('value', function(snapshot) {
+        var action = snapshot.val();
+        if (action === 'play') {
+          video.play();
+        } else if (action === 'pause') {
+          video.pause();
+        }
+      });
+
+      // Lee el estado de bloqueo
+      database.ref('locked').on('value', function(snapshot) {
+        var locked = snapshot.val();
+        if (locked) {
+          document.body.style.pointerEvents = 'none'; // Bloquea la interacción
+        } else {
+          document.body.style.pointerEvents = 'auto'; // Desbloquea
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <video id="videoPlayer" width="640" controls>
+      <source src="https://drive.google.com/uc?export=download&id=ID_DEL_VIDEO" type="video/mp4">
+    </video>
+  </body>
+</html>
