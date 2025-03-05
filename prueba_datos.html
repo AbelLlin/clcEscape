@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Video con Firebase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        video {
+            margin: 20px;
+            max-width: 80%;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Control de Video en Tiempo Real</h1>
+
+    <video id="videoPlayer" controls>
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        Tu navegador no soporta el formato de video.
+    </video>
+
+    <!-- Botones para enviar comandos -->
+    <div>
+        <button onclick="sendCommand('play')">Reproducir</button>
+        <button onclick="sendCommand('pause')">Pausar</button>
+        <button onclick="sendCommand('lock')">Bloquear Video</button>
+        <button onclick="sendCommand('unlock')">Desbloquear Video</button>
+    </div>
+
+    <!-- Agregar el script de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.4.0/firebase-database.js"></script>
+
+    <script>
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDPbAuJFLKSGmQKr2rEvU6uHG_E1-6Pllc",
+  authDomain: "clcescape.firebaseapp.com",
+  databaseURL: "https://clcescape-default-rtdb.firebaseio.com",
+  projectId: "clcescape",
+  storageBucket: "clcescape.firebasestorage.app",
+  messagingSenderId: "801516404485",
+  appId: "1:801516404485:web:1217ce421ac2cafbc2c16c"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+        // Obtener referencia a la base de datos
+        var database = firebase.database();
+
+        // Obtener referencia al video
+        var video = document.getElementById('videoPlayer');
+
+        // Función para enviar comandos a Firebase
+        function sendCommand(action) {
+            database.ref('action').set(action);
+        }
+
+        // Escuchar cambios en la base de datos en tiempo real
+        database.ref('action').on('value', function(snapshot) {
+            var command = snapshot.val();
+            if (command === 'play') {
+                video.play();
+            } else if (command === 'pause') {
+                video.pause();
+            } else if (command === 'lock') {
+                document.body.style.pointerEvents = 'none';  // Bloquea la interacción con el video
+            } else if (command === 'unlock') {
+                document.body.style.pointerEvents = 'auto';  // Desbloquea la interacción
+            }
+        });
+    </script>
+
+</body>
+</html>
